@@ -4,6 +4,7 @@ import { InMemoryStatementsRepository } from "../../repositories/in-memory/InMem
 import { CreateUserUseCase } from "../../../users/useCases/createUser/CreateUserUseCase";
 import { CreateStatementUseCase } from "../createStatement/CreateStatementUseCase";
 import { GetBalanceUseCase } from "./GetBalanceUseCase";
+import { GetBalanceError } from "./GetBalanceError";
 
 let createUserUseCase: CreateUserUseCase;
 let createStatementUseCase: CreateStatementUseCase;
@@ -37,16 +38,13 @@ describe("Get Balance", () => {
 
   it("should be able get balance from user", async () => {
     //1 Create user --
-    //2 Deposit --
-    //3 Withdraw --
-    //4 Get Balance --
-
     const user = await createUserUseCase.execute({
       email: "jonh@finapi.com",
       name: "John Snow",
       password: "psw",
     });
 
+    //2 Deposit --
     await createStatementUseCase.execute({
       user_id: user.id as string,
       type: "deposit" as OperationType,
@@ -54,6 +52,7 @@ describe("Get Balance", () => {
       description: "Credit" as string,
     });
 
+    //3 Withdraw --
     await createStatementUseCase.execute({
       user_id: user.id as string,
       type: "withdraw" as OperationType,
@@ -61,10 +60,19 @@ describe("Get Balance", () => {
       description: "Debit" as string,
     });
 
+    //4 Get Balance --
     const result = await getBalanceUseCase.execute({
       user_id: user.id as string,
     });
 
     expect(result.balance).toBe(900);
+  });
+
+  it("should not be able to get balance of a non-existent user", async () => {
+    expect(async () => {
+      const result = await getBalanceUseCase.execute({
+        user_id: "user_id does not exist",
+      });
+    }).rejects.toBeInstanceOf(GetBalanceError);
   });
 });
