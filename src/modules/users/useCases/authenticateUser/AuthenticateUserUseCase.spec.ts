@@ -18,8 +18,8 @@ describe("Authenticate User", () => {
 
   it("Should be able to authenticate an user", async () => {
     const user = await createUserUseCase.execute({
-      email: "jonh@finapi.com",
-      name: "John Snow",
+      email: "mary@finapi.com",
+      name: "Mary Poppins",
       password: "psw",
     });
 

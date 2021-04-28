@@ -61,40 +61,25 @@ describe("Get Statement Operation", () => {
     expect(result.amount).toBe(1000);
   });
 
-  it("should not be able get statement operation of an non-existent user", async () => {
+  it("should not be able get statement operation of an non-existent user", () => {
     expect(async () => {
-      //1 Create user --
-      const user = await createUserUseCase.execute({
-        email: "jonh@finapi.com",
-        name: "John Snow",
-        password: "psw",
-      });
-
-      //2 Deposit --
-      const statement = await createStatementUseCase.execute({
-        user_id: user.id as string,
-        type: "deposit" as OperationType,
-        amount: 1000,
-        description: "Credit",
-      });
-
-      const result = await getStatementOperationUseCase.execute({
+      await getStatementOperationUseCase.execute({
         user_id: "user_id does not exist",
-        statement_id: statement.id as string,
+        statement_id: "statement_id",
       });
     }).rejects.toBeInstanceOf(GetStatementOperationError.UserNotFound);
   });
 
-  it("should not be able to get statement operation do not stored", async () => {
+  it("should not be able to get statement operation do not stored", () => {
     expect(async () => {
       //1 Create user --
       const user = await createUserUseCase.execute({
-        email: "jonh@finapi.com",
-        name: "John Snow",
+        email: "mary@finapi.com",
+        name: "Mary Poppins",
         password: "psw",
       });
 
-      const result = await getStatementOperationUseCase.execute({
+      await getStatementOperationUseCase.execute({
         user_id: user.id as string,
         statement_id: "statement_id does not exist",
       });
